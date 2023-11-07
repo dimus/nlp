@@ -38,7 +38,7 @@ doc_emb = model.encode(
 
 print(doc_emb.shape)  # == (2, 768)
 
-with open('./data/seashells_book.txt', 'r') as file:
+with open('../data/seashells_book.txt', 'r') as file:
     txt = file.read()
 
 chunks = split_text_into_chunks(txt)
