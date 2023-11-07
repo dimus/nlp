@@ -1,10 +1,24 @@
 # Importing the SentenceTransformer library
 from sentence_transformers import SentenceTransformer
 
+
+def split_text_into_chunks(text, chunk_size=1000, overlap=50):
+    chunks = []
+    start = 0
+
+    while start < len(text):
+        end = min(start + chunk_size, len(text))
+        chunk = text[start:end]
+        chunks.append(chunk)
+        start += chunk_size - overlap
+
+    return chunks
+
 # Initializing a SentenceTransformer model with the 'multi-qa-mpnet-base-cos-v1'
 # pre-trained model
 
-model = SentenceTransformer('all-MiniLM-L6-v2' )
+# model = SentenceTransformer('all-MiniLM-L6-v2' )
+model = SentenceTransformer('multi-qa-mpnet-base-cos-v1' )
 
 # Defining a list of documents to generate embeddings for
 docs = [
@@ -23,4 +37,13 @@ show_progress_bar=True # Display a progress bar
 # The shape of the embeddings is (2, 768), indicating a length of 768 and two
 # embeddings generated
 
-doc_emb.shape # == (2, 768)
+print(doc_emb.shape) # == (2, 768)
+
+with open('./data/seashells_book.txt', 'r') as file:
+    txt = file.read()
+
+chunks = split_text_into_chunks(txt)
+
+for i, chunk in enumerate(chunks):
+   print(f"Chunk {i + 1}:\n{chunk}\n\n\n")
+
