@@ -7,7 +7,6 @@ import os
 from tqdm import tqdm
 import numpy as np
 import pinecone
-
 import logging
 
 logger = logging.getLogger()
@@ -72,22 +71,64 @@ def prepare_for_pinecone(texts, model=ENGINE):
     # UTC date and time
     return [
         (
-            my_hash(
-                text
-            ),  # A unique ID for each string, 
-                # generated using the my_hash() function
+            my_hash(text),  # A unique ID for each string, 
+            # generated using the my_hash() function
             embedding,  # The vector embedding of the string
-            dict(
-                text=text, date_uploaded=now
-            )  # A dictionary of metadata, including the original
-               # text and the current UTC date and time
+            dict(text=text, date_uploaded=now
+                 )  # A dictionary of metadata, including the original
+            # text and the current UTC date and time
         ) for text, embedding in zip(
-            texts, embeddings
-        )  # Iterate over each input string and its
-           # corresponding vector embedding
+            texts, embeddings)  # Iterate over each input string and its
+        # corresponding vector embedding
     ]
 
 
-texts = ["hi"]
-res = prepare_for_pinecone(texts)
+def upload_texts_to_pinecone(texts,
+                             namespace=NAMESPACE,
+                             batch_size=None,
+                             show_progress_bar=False):
+    # Call the prepare_for_pinecone function to prepare the
+    # input texts for indexing
+    total_upserted = 0
+    if not batch_size:
+        batch_size = len(texts)
+
+    _range = range(0, len(texts), batch_size)
+    for i in tqdm(_range) if show_progress_bar else _range:
+        batch = texts[i:i + batch_size]
+        prepared_texts = prepare_for_pinecone(batch)
+
+        # Use the upsert() method of the index object to upload
+        # the prepared texts to Pinecone
+        total_upserted += index.upsert(prepared_texts)['upserted_count']
+
+    return total_upserted
+
+
+def query_from_pinecone(query, top_k=3):
+    # get embedding from THE SAME embedder as the documents
+    query_embedding = get_embedding(query, model=ENGINE)
+
+    return index.query(
+      vector=query_embedding,
+      top_k=top_k,
+      include_metadata=True   # gets the metadata (dates, text, etc)
+    ).get('matches')
+
+
+def delete_texts_from_pinecone(texts, namespace=NAMESPACE):
+    # Compute the hash (id) for each text
+    hashes = [hashlib.md5(text.encode()).hexdigest() for text in texts]
+
+    # The ids parameter is used to specify the list of IDs (hashes) to delete
+    return index.delete(ids=hashes)
+
+
+texts = ['hi']
+upload_texts_to_pinecone(texts)
+res = query_from_pinecone("hello")
 print(res)
+
+# delete_texts_from_pinecone(texts)
+# res = query_from_pinecone("hello")
+# print(res)
