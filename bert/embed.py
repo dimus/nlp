@@ -137,7 +137,7 @@ client = SentenceTransformer(MODEL)
 # The shape of the embeddings is (2, 768), indicating a length of 768 and two
 # embeddings generated
 
-with open('../data/christophers_1960.txt', 'r') as file:
+with open('../data/seashells_book.txt', 'r') as file:
     txt = file.read()
 
 texts = split_text_into_chunks(txt)
@@ -147,7 +147,7 @@ embeddings = client.encode(
     show_progress_bar=True
 )
 
-query = "what viruses Aedes aegypti transmits?"
+query = "danger from molluscs?"
 
 query_embedded = client.encode(query)
 
