@@ -126,9 +126,9 @@ def delete_texts_from_pinecone(texts, namespace=NAMESPACE):
 
 texts = ['hi']
 upload_texts_to_pinecone(texts)
-res = query_from_pinecone("hello")
-print(res)
-
-# delete_texts_from_pinecone(texts)
 # res = query_from_pinecone("hello")
 # print(res)
+
+delete_texts_from_pinecone(texts)
+res = query_from_pinecone("hello")
+print(res)
