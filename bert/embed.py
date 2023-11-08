@@ -20,7 +20,7 @@ logger.setLevel(logging.DEBUG)
 
 pinecone.init(api_key=pinecone_key, environment="gcp-starter")
 
-if False: 
+if False:
     # INDEX_NAME not in pinecone.list_indexes():
     pinecone.create_index(
         INDEX_NAME,  # The name of the index
@@ -137,7 +137,7 @@ client = SentenceTransformer(MODEL)
 # The shape of the embeddings is (2, 768), indicating a length of 768 and two
 # embeddings generated
 
-with open('../data/seashells_book.txt', 'r') as file:
+with open('../data/christophers_1960.txt', 'r') as file:
     txt = file.read()
 
 texts = split_text_into_chunks(txt)
@@ -160,6 +160,8 @@ print("Query:", query)
 print("\nTop 5 most similar sentences in corpus:")
 
 for score, idx in zip(top_results[0], top_results[1]):
+    if score < 0.6:
+        continue
     print(texts[idx], "(Score: {:.4f})".format(score))
     print("\n\n======================\n\n")
 
