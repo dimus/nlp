@@ -147,7 +147,7 @@ embeddings = client.encode(
     show_progress_bar=True
 )
 
-query = "which molluscs are used for coloring clothes"
+query = "what viruses Aedes aegypti transmits?"
 
 query_embedded = client.encode(query)
 
@@ -160,7 +160,7 @@ print("Query:", query)
 print("\nTop 5 most similar sentences in corpus:")
 
 for score, idx in zip(top_results[0], top_results[1]):
-    if score < 0.6:
+    if score < -0.6:
         continue
     print(texts[idx], "(Score: {:.4f})".format(score))
     print("\n\n======================\n\n")
